@@ -131,3 +131,183 @@ JSR303数据校验
    - Public,static,/**,resources       localhost:8080/
 
 2. 优先级：resources>static(默认)>public
+
+
+
+## 写一个stater
+
+```java
+// 创建配置类，根据自己项目需求进行创建，实质上就是一个实体类
+// @ConfigurationProperties 说明：将来调用方在yml中配置的前缀
+@ConfigurationProperties(prefix = "hsql")
+public class Property {
+    private String name;
+    private String sex;
+    private String url;
+    private String username;
+    private String password;
+
+    @Override
+    public String toString() {
+        return "Property{" +
+                "name='" + name + '\'' +
+                ", sex='" + sex + '\'' +
+                ", url='" + url + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
+
+```
+
+```java
+// 根据场景进行相关业务的开发
+public class TestService {
+    private Property property;
+
+    @Autowired
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+		// 调用方给starter中的方法传递参数
+    public void splitString(String name) {
+        String[] strings = name.split("\\.");
+        System.out.println(Arrays.toString(strings));
+    }
+		// 获取到调用方在yml中配置的属性
+    public void print() {
+        System.out.println(property.toString());
+    }
+}
+```
+
+```java
+// 创建自动配置类
+@Configuration
+// 注意括号中的参数为配置类对象
+@EnableConfigurationProperties(Property.class)
+public class SplitAutoConfiguration {
+	  // 书写一个配置类对象成员变量
+    private final Property property;
+		// 书写自动配置类有参构造将成员变量传入
+    public SplitAutoConfiguration(Property property) {
+        this.property = property;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TestService testService() {
+        return new TestService();
+    }
+}
+```
+
+```java
+// 在resources下面创建META-INF目录中创建sprin.factories文件书写以下内容
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lianwei.config.SplitAutoConfiguration
+```
+
+## log-springboot-starter
+
+```java
+// 开发注解
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MyLog {
+    String desc() default "";
+}
+```
+
+```java
+// 开发拦截器
+public class MyLogInterceptor implements HandlerInterceptor {
+    private final ThreadLocal<Long> threadLocal = new ThreadLocal<>();
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        HandlerMethod handler1 = (HandlerMethod) handler;
+        Method method = handler1.getMethod();
+        MyLog myLog = method.getAnnotation(MyLog.class);
+        if (myLog != null) {
+            threadLocal.set(System.currentTimeMillis());
+        }
+        return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        HandlerMethod handler1 = (HandlerMethod) handler;
+        Method method = handler1.getMethod();
+        MyLog myLog = method.getAnnotation(MyLog.class);
+        if (myLog != null) {
+            long time = System.currentTimeMillis() - threadLocal.get();
+            StringBuffer requestURL = request.getRequestURL();
+            String desc = myLog.desc();
+            String s = method.getDeclaringClass().getName() + "    " + method.getName();
+            System.out.println("本方法执行耗时：" + time);
+            System.out.println("本方法的请求路径：" + requestURL);
+            System.out.println("本方法的备注是：" + desc);
+            System.out.println("本方法所在位置以及方法名称是：" + s);
+        }
+    }
+}
+```
+
+```java
+@Configuration
+public class MyLogAutoConfiguration implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new MyLogInterceptor());
+    }
+}
+```
+
+```java
+// 在resources下面创建META-INF目录中创建sprin.factories文件书写以下内容
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lianwei.config.MyLogAutoConfiguration
+```
+
