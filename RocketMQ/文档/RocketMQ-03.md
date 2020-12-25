@@ -27,8 +27,7 @@ Apache下开源的另外一款MQ—ActiveMQ（默认采用的KahaDB做消息存�
 
   ![](img/磁盘.png)
 
-
-###1.1.2 性能对比
+### 1.1.2 性能对比
 
 文件系统>关系型数据库DB
 
@@ -38,7 +37,7 @@ Apache下开源的另外一款MQ—ActiveMQ（默认采用的KahaDB做消息存�
 
 磁盘如果使用得当，磁盘的速度完全可以匹配上网络 的数据传输速度。目前的高性能磁盘，顺序写速度可以达到600MB/s， 超过了一般网卡的传输速度。但是磁盘随机写的速度只有大概100KB/s，和顺序写的性能相差6000倍！因为有如此巨大的速度差别，好的消息队列系统会比普通的消息队列系统速度快多个数量级。RocketMQ的消息用顺序写,保证了消息存储的速度。
 
-####2）消息发送
+#### 2）消息发送
 
 Linux操作系统分为【用户态】和【内核态】，文件操作、网络操作需要涉及这两种形态的切换，免不了进行数据复制。
 
@@ -85,11 +84,11 @@ RocketMQ的消息是存储到磁盘上的，这样既能保证断电后恢复，
 
 在返回写成功状态时，消息可能只是被写入了内存的PAGECACHE，写操作的返回快，吞吐量大；当内存里的消息量积累到一定程度时，统一触发写磁盘动作，快速写入。
 
-####3）配置
+#### 3）配置
 
 **同步刷盘还是异步刷盘，都是通过Broker配置文件里的flushDiskType 参数设置的，这个参数被配置成SYNC_FLUSH、ASYNC_FLUSH中的 一个。**
 
-## 1.2 高可用性机制
+##  1.2 高可用性机制
 
 ![](img/RocketMQ角色.jpg)
 
@@ -113,23 +112,23 @@ Master角色的Broker支持读和写，Slave角色的Broker仅支持读，也就
 
 如果一个Broker组有Master和Slave，消息需要从Master复制到Slave 上，有同步和异步两种复制方式。
 
-####1）同步复制
+#### 1）同步复制
 
 同步复制方式是等Master和Slave均写 成功后才反馈给客户端写成功状态；
 
 在同步复制方式下，如果Master出故障， Slave上有全部的备份数据，容易恢复，但是同步复制会增大数据写入 延迟，降低系统吞吐量。
 
-####2）异步复制 
+####  2）异步复制 
 
 异步复制方式是只要Master写成功 即可反馈给客户端写成功状态。
 
 在异步复制方式下，系统拥有较低的延迟和较高的吞吐量，但是如果Master出了故障，有些数据因为没有被写 入Slave，有可能会丢失；
 
-####3）配置
+#### 3）配置
 
 同步复制和异步复制是通过Broker配置文件里的brokerRole参数进行设置的，这个参数可以被设置成ASYNC_MASTER、 SYNC_MASTER、SLAVE三个值中的一个。
 
-####4）总结
+#### 4）总结
 
 ![](img/复制刷盘.png)
 
@@ -167,7 +166,7 @@ Producer端，每个实例在发消息的时候，默认会轮询所有的messag
 
 但是如果consumer实例的数量比message queue的总数量还多的话，多出来的consumer实例将无法分到queue，也就无法消费到消息，也就无法起到分摊负载的作用了。所以需要控制让queue的总数量大于等于consumer的数量。
 
-####2）广播模式
+#### 2）广播模式
 
 由于广播模式下要求一条消息需要投递到一个消费组下面所有的消费者实例，所以也就没有消息被分摊消费的说法。
 
@@ -399,7 +398,7 @@ consumer.subscribe("ons_test", "*", new MessageListener() {
 * test：测试相关类
 * tools：工具类，监控命令相关实现类
 
-###2.1.2 导入IDEA
+### 2.1.2 导入IDEA
 
 ![](img/源码2.png)
 
@@ -472,7 +471,7 @@ abortFile=E:\\RocketMQ\\data\\rocketmq\\dataDir\\abort
 
 ![](img/源码8.png)
 
-####3）发送消息
+#### 3）发送消息
 
 * 进入example模块的`org.apache.rocketmq.example.quickstart`
 * 指定Namesrv地址
@@ -518,7 +517,7 @@ NameServer本身的高可用是通过部署多台NameServer来实现，但彼此
 
 启动类：`org.apache.rocketmq.namesrv.NamesrvStartup`
 
-####步骤一
+#### 步骤一
 
 解析配置文件，填充NameServerConfig、NettyServerConfig属性值，并创建NamesrvController
 
@@ -696,7 +695,7 @@ private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> f
 
 #### 2.2.3.2 路由注册
 
-#####1）发送心跳包
+##### 1）发送心跳包
 
 ![](img/路由注册.png)
 
@@ -1273,7 +1272,7 @@ public RemotingCommand getRouteInfoByTopic(ChannelHandlerContext ctx,
   SendResult send(final Collection<Message> msgs) throws MQClientException, RemotingException, MQBrokerException,InterruptedException;
   ```
 
-####2）属性介绍
+#### 2）属性介绍
 
 ![](img/DefaultMQProducer属性.png)
 
@@ -1387,7 +1386,7 @@ public SendResult send(Message msg,long timeout){
 Validators.checkMessage(msg, this.defaultMQProducer);
 ```
 
-####1）验证消息
+#### 1）验证消息
 
 ***代码：Validators#checkMessage***
 
@@ -1417,7 +1416,7 @@ public static void checkMessage(Message msg, DefaultMQProducer defaultMQProducer
 }
 ```
 
-####2）查找路由
+#### 2）查找路由
 
 ***代码：DefaultMQProducerImpl#tryToFindTopicPublishInfo***
 
@@ -1788,7 +1787,7 @@ public void updateFaultItem(final String name, final long currentLatency, final 
 }
 ```
 
-####4）发送消息
+#### 4）发送消息
 
 消息发送API核心入口***DefaultMQProducerImpl#sendKernelImpl***
 
@@ -2034,7 +2033,7 @@ private MessageBatch batch(Collection<Message> msgs) throws MQClientException {
 
 ## 2.4 消息存储
 
-###2.4.1 消息存储核心类
+### 2.4.1 消息存储核心类
 
 ![](img/DefaultMessageStore.png)
 
@@ -2415,7 +2414,7 @@ public long getMaxWrotePosition() {
 }
 ```
 
-####2）MappedFile
+#### 2）MappedFile
 
 ![](img/MappedFile.png)
 
@@ -3110,7 +3109,7 @@ public void recoverTopicQueueTable() {
 }
 ```
 
-####2）正常恢复
+#### 2）正常恢复
 
 ***代码：CommitLog#recoverNormally***
 
@@ -3206,7 +3205,7 @@ public void truncateDirtyFiles(long offset) {
 }
 ```
 
-####3）异常恢复
+#### 3）异常恢复
 
 Broker异常停止文件恢复的实现为CommitLog#recoverAbnormally。异常文件恢复步骤与正常停止文件恢复流程基本相同，其主要差别有两个。首先，正常停止默认从倒数第三个文件开始进行恢复，而异常停止则需要从最后一个文件往前走，找到第一个消息存储正常的文件。其次，如果CommitLog目录没有消息文件，如果消息消费队列目录下存在文件，则需要销毁。
 
@@ -3581,7 +3580,7 @@ RocketMQ不会永久存储消息文件、消息消费队列文件，而是启动
 
 RocketMQ支持局部顺序消息消费，也就是保证同一个消息队列上的消息顺序消费。不支持消息全局顺序消费，如果要实现某一个主题的全局顺序消费，可以将该主题的队列数设置为1，牺牲高可用性。
 
-###2.5.2 消息消费初探
+###  2.5.2 消息消费初探
 
 **<u>消息推送模式</u>**
 

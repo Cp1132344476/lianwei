@@ -4,7 +4,7 @@
 
 模拟电商网站购物场景中的【下单】和【支付】业务
 
-###1）下单
+### 1）下单
 
 ![](img/下单组件图.png)
 
@@ -17,7 +17,7 @@
 
 ------
 
-###2）支付
+### 2）支付
 
 ![](img/支付组件图.png)
 
@@ -42,7 +42,7 @@
 
 ![](img/下单时序图(2).png)
 
-###问题2
+### 问题2
 
 用户通过第三方支付平台（支付宝、微信）支付成功后，第三方支付平台要通过回调API异步通知商家支付系统用户支付结果，支付系统根据支付结果修改订单状态、记录支付日志和给用户增加积分。
 
@@ -638,7 +638,7 @@ shop系统基于Maven进行项目管理
 
 使用Mybatis逆向工程针对数据表生成CURD持久层代码
 
-###2）代码导入
+### 2）代码导入
 
 * 将实体类导入到shop-pojo工程
 * 在服务层工程中导入对应的Mapper类和对应配置文件
@@ -684,7 +684,7 @@ public interface IOrderService {
 }
 ```
 
-###2）业务类实现
+### 2）业务类实现
 
 ```java
 @Slf4j
@@ -719,7 +719,7 @@ public class OrderServiceImpl implements IOrderService {
 }
 ```
 
-###3）校验订单
+### 3）校验订单
 
 ![](img/校验订单(2).png)
 
@@ -752,7 +752,7 @@ private void checkOrder(TradeOrder order) {
 }
 ```
 
-###4）生成预订单
+### 4）生成预订单
 
 ![](img/生成预订单.png)
 
@@ -833,7 +833,7 @@ private Long savePreOrder(TradeOrder order) {
 }
 ```
 
-###5）扣减库存
+### 5）扣减库存
 
 * 通过dubbo调用商品服务完成扣减库存
 
@@ -882,7 +882,7 @@ public Result reduceGoodsNum(TradeGoodsNumberLog goodsNumberLog) {
 }
 ```
 
-###6）扣减优惠券
+### 6）扣减优惠券
 
 * 通过dubbo完成扣减优惠券
 
@@ -926,7 +926,7 @@ public Result changeCouponStatus(TradeCoupon coupon) {
 }
 ```
 
-###7）扣减用户余额
+### 7）扣减用户余额
 
 * 通过用户服务完成扣减余额
 
@@ -1012,7 +1012,7 @@ public Result changeUserMoney(TradeUserMoneyLog userMoneyLog) {
 }
 ```
 
-###8）确认订单 
+### 8）确认订单 
 
 ```java
 private void updateOrderStatus(TradeOrder order) {
@@ -1422,13 +1422,13 @@ public class OrderTest {
 }
 ```
 
-###1）准备测试数据
+### 2）准备测试数据
 
 * 用户数据
 * 商品数据
 * 优惠券数据
 
-###2）测试下单成功流程
+### 3）测试下单成功流程
 
 ```java
 @Test    
@@ -1453,7 +1453,7 @@ public void add(){
 
 执行完毕后,查看数据库中用户的余额、优惠券数据，及订单的状态数据
 
-###3）测试下单失败流程
+### 4）测试下单失败流程
 
 代码同上。
 
